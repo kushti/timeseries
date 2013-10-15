@@ -24,11 +24,13 @@ class IntegrationSpec extends Specification{
     "correctly write and read double and string in org.chepurnoy.timeseries.mongo" in {
 
       val basket = "basket"
-      val timeSeriesTest1 = TimeSeriesDoubleDatum(6.0,new DateTime())
-      val timeSeriesTest2 = TimeSeriesStringDatum("string",new DateTime())
+      val timeSeriesTest1 = TimeSeriesDoubleDatum(6.0,new DateTime(1381436764))
+      val timeSeriesTest2 = TimeSeriesStringDatum("string",new DateTime(1381436763))
+      val timeSeriesTest3 = TimeSeriesStringDatum("str",new DateTime(1381436767))
 
       testWriteMongo(basket,timeSeriesTest1)
       testWriteMongo(basket,timeSeriesTest2)
+      testWriteMongo(basket,timeSeriesTest3)
 
       val f = db.get(basket,2)
       val results = Await.result(f, duration)

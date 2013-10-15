@@ -1,6 +1,6 @@
 name := "timeseries"
 
-version := "0.1"
+version := "0.1.8"
 
 scalaVersion := "2.10.2"
 
@@ -14,7 +14,11 @@ resolvers ++= Seq("snapshots" at "http://oss.sonatype.org/content/repositories/s
                     "releases"  at "http://oss.sonatype.org/content/repositories/releases")
 
 libraryDependencies ++=  Seq(
-        "org.reactivemongo" %% "reactivemongo" % "0.10-SNAPSHOT",
+        "org.reactivemongo" %% "reactivemongo" % "0.10.0-SNAPSHOT" ,
         "joda-time" % "joda-time" % "2.1",
         "org.joda" % "joda-convert" % "1.2",
         "org.specs2" %% "specs2" % "2.2.3" % "test")
+
+publishMavenStyle := true
+
+publishTo := Some(Resolver.file("timeseries",  new File( "/home/serjk/workspaces/work/SimpleMonitoring/repository" )) )

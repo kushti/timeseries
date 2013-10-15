@@ -17,7 +17,7 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
   val db = connection(dbName)
 
   lazy val emptyQuery = BSONDocument()
-  lazy val reverseOrder = BSONDocument("timestamp" -> -1)
+  lazy val reverseOrder = BSONDocument("t" -> -1)
 
   def put(basket:String, datum:TimeSeriesDatum):Future[Boolean] = {
     val collection:BSONCollection = db(basket)
@@ -26,13 +26,13 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
 
   def getEnumerator(basket: String):TimeSeriesDataEnumerator  = {
     val collection:BSONCollection = db(basket)
-    val data = collection.find(emptyQuery).cursor[TimeSeriesDatum].enumerate()
+    val data = collection.find(emptyQuery).sort(reverseOrder).cursor[TimeSeriesDatum].enumerate()
     TimeSeriesDataEnumerator(basket, data)
   }
 
   def get(basket:String):Future[TimeSeriesData] = {
     val collection:BSONCollection = db(basket)
-    val fData = collection.find(emptyQuery).cursor[TimeSeriesDatum].toList()
+    val fData = collection.find(emptyQuery).sort(reverseOrder).cursor[TimeSeriesDatum].toList()
     fData.map(data=> TimeSeriesData(basket, data))
   }
 
@@ -45,6 +45,7 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
 
     val fData = collection.
       find(emptyQuery, filter).
+      sort(reverseOrder).
       cursor[TimeSeriesDatum].
       toList()
 
@@ -70,7 +71,7 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
 //  }
 
   def basketsList():Future[List[String]] = {
-    db.collectionNames
+    db.collectionNames.map(baskets=> baskets.filter(!_.contains("system")))
   }
 
 
