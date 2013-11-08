@@ -21,4 +21,4 @@ libraryDependencies ++=  Seq(
 
 publishMavenStyle := true
 
-publishTo := Some(Resolver.file("timeseries",  new File( "/home/serjk/workspaces/work/SimpleMonitoring/repository" )) )
+publishTo := Some(Resolver.file("timeseries",  new File("./repository")) )
