@@ -51,11 +51,13 @@ trait Operations {
    */
   def basketsList():Future[List[String]]
 
-  //  def getAs[T](basket:String):Option[Future[TimeSeriesData]]
 
-  // def getEnumratorAs[T](basket:String):Options[TimeSeriesDataEnumerator]
+  /**
+   * Delete all data in a basket before given timestamp
+   * @param basket - basket
+   * @param timestamep - timestamp
+   */
+  def deleteBefore(basket: String, timestamep:DateTime)
 
-  //todo: getAs[T] Option[Future[TSData]]
-  //todo: getEnumratorAs[T]
 
 }

@@ -8,7 +8,7 @@ import reactivemongo.api.collections.default.BSONCollection
 import ExecutionContext.Implicits.global
 import org.chepurnoy.timeseries.{TimeSeriesData, TimeSeriesDataEnumerator, TimeSeriesDatum, Operations}
 
-/** implement Operation trait in Mongo
+/** Operation trait Mongo implementation
  *
  * @constructor create connect to mongo
  * @param servers is list servers with mongo
@@ -44,15 +44,15 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
 
   def get(basket: String, startTime: DateTime, finishTime: DateTime): Future[TimeSeriesData] = {
     val collection:BSONCollection = db(basket)
-    val filter = BSONDocument("$and" -> BSONDocument("timestamp" -> BSONDocument("$gt" -> startTime),
-      "timestamp" -> BSONDocument("$lt" -> finishTime)
+    val filter = BSONDocument("$and" -> BSONDocument("t" -> BSONDocument("$gt" -> startTime),
+      "t" -> BSONDocument("$lt" -> finishTime)
     ))
 
     val fData = collection.
       find(emptyQuery, filter).
       sort(reverseOrder).
       cursor[TimeSeriesDatum].
-      toList()
+      collect[List]()
 
     fData.map(data=> TimeSeriesData(basket, data))
   }
@@ -64,7 +64,7 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
               sort(reverseOrder).
               options(QueryOpts().batchSize(howMany)).
               cursor[TimeSeriesDatum].
-              toList()
+              collect[List]()
     fData.map(data=> TimeSeriesData(basket, data))
   }
 
@@ -72,11 +72,10 @@ class MongoOperations(servers: List[String], dbName:String) extends Operations w
     db.collectionNames.map(baskets=> baskets.filter(!_.contains("system")))
   }
 
-  //  def getAs[T](basket:String):Option[Future[TimeSeriesData]] = {
-  //    val collection:BSONCollection = db(basket)
-  //    val data = collection.find(emptyQuery).cursor[TimeSeriesDatum{type T = T}].enumerate()
-  //    TimeSeriesDataEnumerator(basket, data)
-  //
-  //  }
+  def deleteBefore(basket: String, timestamp:DateTime) = {
+    val collection:BSONCollection = db(basket)
 
+    val query = BSONDocument("t" -> BSONDocument("$gt" -> timestamp))
+    collection.remove(query)
+  }
 }
